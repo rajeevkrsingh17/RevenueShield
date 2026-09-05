@@ -1,0 +1,107 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Organization {
+  id              String           @id @default(uuid())
+  name            String
+  ownerId         String?
+  demoSandboxMode Boolean          @default(true)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  users           User[]
+  transactions    Transaction[]
+  auditLogs       AuditLogEntry[]
+  anomalies       Anomaly[]
+  notifications   Notification[]
+}
+
+model User {
+  id             String       @id @default(uuid())
+  name           String
+  email          String       @unique
+  passwordHash   String
+  role           String       @default("ADMIN")
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Transaction {
+  id                     String           @id @default(uuid())
+  organizationId         String
+  organization           Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  transactionId          String           @unique // Display ID e.g. pay_N9xL82kP
+  amount                 Float
+  currency               String           @default("INR")
+  customerName           String
+  customerTier           String           @default("Standard") // Enterprise, VIP, Premium, Standard
+  paymentMethod          String           // UPI, Netbanking, Credit Card, Debit Card, Wallet
+  bank                   String           // HDFC, ICICI, SBI, Axis, PhonePe, Paytm, GooglePay
+  failureReason          String           // Insufficient Funds, 3D Secure Timeout, Bank Server Timeout, Card Declined by Issuer, UPI PIN Mismatch, Netbanking Session Expired, International Card Blocked
+  failureCategory        String           // TIMEOUT, USER_ERROR, DECLINED, BANK_DOWN, COMPLIANCE
+  status                 String           @default("RECOVERABLE") // FAILED, RECOVERABLE, RECOVERED, LOST
+  recoveryProbability    Float            // 0.0 to 1.0
+  expectedRecoveryAmount Float
+  recommendedAction      String           // RETRY, SWITCH_METHOD, SEND_LINK, ESCALATE
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
+  recoveryActions        RecoveryAction[]
+  auditLogs              AuditLogEntry[]
+}
+
+model RecoveryAction {
+  id            String      @id @default(uuid())
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  actionType    String      // RETRY, SWITCH_METHOD, SEND_LINK, ESCALATE
+  status        String      @default("PENDING") // PENDING, APPROVED, EXECUTED, FAILED
+  aiConfidence  Float
+  executedAt    DateTime?
+  outcome       String?
+  createdAt     DateTime    @default(now())
+}
+
+model AuditLogEntry {
+  id               String       @id @default(uuid())
+  organizationId   String
+  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  transactionId    String?
+  transaction      Transaction? @relation(fields: [transactionId], references: [id], onDelete: SetNull)
+  timestamp        DateTime     @default(now())
+  aiRecommendation String
+  aiConfidence     Float
+  policyDecision   String       @default("AUTO_APPROVED") // AUTO_APPROVED, MANUAL_OVERRIDE, BLOCKED
+  merchantApproval String       @default("APPROVED") // APPROVED, REJECTED, AUTO
+  status           String       // SUCCESS, FAILED, EXECUTED
+  outcome          String
+}
+
+model Anomaly {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  title          String
+  severity       String       @default("HIGH") // CRITICAL, HIGH, MEDIUM, LOW
+  confidence     Float        @default(0.92)
+  description    String
+  detectedAt     DateTime     @default(now())
+  resolved       Boolean      @default(false)
+}
+
+model Notification {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  title          String
+  message        String
+  type           String       @default("ANOMALY") // ANOMALY, ACTION, SYSTEM
+  isRead         Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+}
