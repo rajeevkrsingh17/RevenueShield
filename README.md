@@ -12,6 +12,25 @@
 
 > **RevenueShield** is a full-stack SaaS dashboard that uses **artificial intelligence** to detect, analyze, and recover failed payment transactions in real-time. It transforms revenue leakage into actionable recovery strategies — helping merchants recover up to **₹2.4M+ in lost revenue**.
 
+<p align="center">
+  <a href="https://revenueshield-gamma.vercel.app/landing"><img src="https://img.shields.io/badge/🌐_Live_Demo-Landing_Page-E8B563?style=for-the-badge" alt="Landing Page" /></a>
+  <a href="https://revenueshield-gamma.vercel.app/login"><img src="https://img.shields.io/badge/📊_Dashboard-Login_Here-10B981?style=for-the-badge" alt="Dashboard" /></a>
+  <a href="https://revenueshield-gamma.vercel.app/api/dashboard/stats"><img src="https://img.shields.io/badge/⚡_Backend_API-Live_Endpoints-6366F1?style=for-the-badge" alt="Backend API" /></a>
+</p>
+
+---
+
+## 🔗 Live Deployment
+
+| Service | Link | Stack |
+|---------|------|-------|
+| 🌐 **Landing Page** | [revenueshield-gamma.vercel.app/landing](https://revenueshield-gamma.vercel.app/landing) | Next.js + Framer Motion |
+| 📊 **Dashboard (Frontend)** | [revenueshield-gamma.vercel.app/login](https://revenueshield-gamma.vercel.app/login) | Next.js 14 + Tailwind CSS + Recharts |
+| ⚡ **Backend API** | [revenueshield-gamma.vercel.app/api/](https://revenueshield-gamma.vercel.app/api/dashboard/stats) | Next.js API Routes + Prisma ORM |
+| 🗄️ **Database** | Neon PostgreSQL (Cloud) | PostgreSQL + Prisma |
+
+> **Demo Credentials:** `admin@revenueshield.ai` / `password123`
+
 ---
 
 ## ✨ Key Features
